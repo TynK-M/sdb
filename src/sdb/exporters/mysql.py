@@ -1,0 +1,37 @@
+"""MySQL export support."""
+
+from pathlib import Path
+
+
+def _mysql_string(value: str) -> str:
+    """Escape a string for use as a MySQL string literal."""
+    return "'" + value.replace("\\", "\\\\").replace("'", "''") + "'"
+
+
+def _mysql_identifier(value: str) -> str:
+    """Quote a MySQL identifier."""
+    return "`" + value.replace("`", "``") + "`"
+
+
+def export(
+    db: dict[str, str], filename: str | Path, table_name: str = "seriousdb_kv"
+) -> None:
+    """Export a key-value database to a MySQL SQL file."""
+    filename = Path(filename)
+    table = _mysql_identifier(table_name)
+
+    with filename.open("w", encoding="utf-8") as f:
+        f.write(f"""CREATE TABLE IF NOT EXISTS {table} (
+    `key` TEXT PRIMARY KEY,
+    `value` TEXT NOT NULL
+);
+
+""")
+
+        for key, value in db.items():
+            f.write(
+                f"INSERT INTO {table} (`key`, `value`) "
+                f"VALUES ({_mysql_string(key)}, {_mysql_string(value)}) "
+                "ON DUPLICATE KEY UPDATE "
+                "`value` = VALUES(`value`);\n"
+            )
