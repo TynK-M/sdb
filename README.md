@@ -1,3 +1,5 @@
+[![CI](https://github.com/TynK-M/sdb/actions/workflows/checks.yml/badge.svg)](https://github.com/TynK-M/sdb/actions/workflows/checks.yml)
+
 # sdb
 
 A small command-line tool for exporting [seriousdb](https://github.com/danieldeer/seriousdb) databases to common formats.
